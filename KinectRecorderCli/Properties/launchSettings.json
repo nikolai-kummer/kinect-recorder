@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "KinectRecorderCli": {
+      "commandName": "Project",
+      "commandLineArgs": "-c imu -f \"test.csv\""
+    }
+  }
+}
