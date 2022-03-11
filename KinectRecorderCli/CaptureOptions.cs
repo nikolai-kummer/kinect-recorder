@@ -9,6 +9,7 @@ namespace KinectRecorder.Cli
     public class CaptureOptions
     {
         public string? Filename { get; set; } = null; 
-        public int Frequency { get; set; } = 50; //Capture Frequency in ms
+        public int ImuFrequency { get; set; } = 50; //Capture Frequency in ms
+        public int ImuDuration { get; set; } = 3000; //Capture Frequency in ms
     }
 }

@@ -9,12 +9,9 @@ namespace KinectRecorder.Cli.Commands
     class Imu
 
     {
-
         private static System.Timers.Timer? triggerTimer;
-        private static int captureFrequency = 50;
         private static string timestampFormat = @"hh\:mm\:ss\.fff";
         private static string floatFormat = @"0.00000";
-        private static int captureTimeMs = 4000;
 
         static ImuSample? GetImuSample(Device inputDevice)
         {
@@ -30,12 +27,12 @@ namespace KinectRecorder.Cli.Commands
             return deviceSample;
         }
 
-        static void intializeTimedCapture(Device device, string filepath)
+        static void intializeTimedCapture(Device device, string filepath, CaptureOptions captureOptions)
         {
             Console.WriteLine("Starting Timer");
             // Create a timer with a two second interval.
-            triggerTimer = new System.Timers.Timer(captureFrequency);
-            triggerTimer.Interval = captureFrequency;
+            triggerTimer = new System.Timers.Timer(captureOptions.ImuFrequency);
+            triggerTimer.Interval = captureOptions.ImuFrequency;
             triggerTimer.Elapsed += (sender, e) => OnTimedEvent(sender, e, device, filepath);
 
             triggerTimer.AutoReset = true;
@@ -100,15 +97,13 @@ namespace KinectRecorder.Cli.Commands
 
         static void OnTimedEvent(object? sender, ElapsedEventArgs e, Device device, string filepath)
         {
-            var imu = device.GetImuSample();
-
-            if (imu == null)
+            var imu = GetImuSample(device);
+            if (imu != null)
             {
-                Console.WriteLine("Failed to capture IMU sample");
+                var imuString = ImuToString(imu);
+                Console.WriteLine(imuString);
+                AppendFile(filepath, imuString);
             }
-            var imuString = ImuToString(imu);
-            Console.WriteLine(imuString);
-            AppendFile(filepath, imuString);
         }
 
         public static async Task<int> ImuCapture(CaptureOptions captureOptions)
@@ -147,10 +142,10 @@ namespace KinectRecorder.Cli.Commands
                 var imu = device.GetImuSample();
                 Console.WriteLine("Device IMU Started Success");
 
-                intializeTimedCapture(device, filename);
+                intializeTimedCapture(device, filename, captureOptions);
 
                 // Press Enter to stop capture
-                Thread.Sleep(captureTimeMs);
+                Thread.Sleep(captureOptions.ImuDuration);
                 //Console.ReadLine();
                 triggerTimer.Stop();
                 triggerTimer.Dispose();

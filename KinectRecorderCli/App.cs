@@ -20,6 +20,11 @@ namespace KinectRecorder.Cli
             [Option('f', "filename", Required = false, HelpText = "Full path to filename where output will be saved. Default same folder with date")]
             public string? Filename { get; set; } = null;
 
+            [Option('t', "freq", Required = false, HelpText = "Imu polling frequencu in ms")]
+            public int? Frequency { get; set; } = 50;
+
+            [Option('d', "duration", Required = false, HelpText = "Imu capture duration in ms")]
+            public int? Duration { get; set; } = 2000;
         }
 
         public App()
@@ -36,6 +41,8 @@ namespace KinectRecorder.Cli
                        var cliOptions = new CaptureOptions()
                        {
                            Filename = o.Filename,
+                           ImuDuration = (int)o.Duration,
+                           ImuFrequency = (int)o.Frequency
                        };
 
                        switch (o.Command)
